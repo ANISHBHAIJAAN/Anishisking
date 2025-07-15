@@ -1,0 +1,27 @@
+# Base image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install subfinder (static binary)
+RUN apt-get update && \
+    apt-get install -y wget unzip && \
+    wget https://github.com/projectdiscovery/subfinder/releases/download/v2.5.7/subfinder_2.5.7_linux_amd64.zip && \
+    unzip subfinder_2.5.7_linux_amd64.zip && \
+    mv subfinder /usr/local/bin/subfinder && \
+    chmod +x /usr/local/bin/subfinder && \
+    rm -rf *.zip README.md LICENSE
+
+# Copy all files
+COPY . .
+
+# Create necessary folders
+RUN mkdir -p temp output
+
+# Set default command
+CMD ["python", "sumaiya.py"]
